@@ -6,7 +6,7 @@ export async function createUser(email, username, password) {
   INSERT INTO users
     (email, username, password)
   VALUES
-    ($1, $2, $2)
+    ($1, $2, $3)
   RETURNING *
   `;
   const hashedPassword = await bcrypt.hash(password, 10);
