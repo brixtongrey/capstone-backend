@@ -1,6 +1,6 @@
 import db from "#db/client";
 
-export async function insertGroup(name, description) {
+export async function createGroup(name, description) {
   try {
     const query = `
         INSERT INTO groups(name, description)
