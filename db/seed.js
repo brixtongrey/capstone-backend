@@ -14,7 +14,7 @@ console.log("🌱 Database seeded.");
 
 async function seed() {
   try {
-    // --- 1. Create Users (4 users) ---
+    // STEP 1: Create Users (4 users)
     console.log("Creating users...");
     const password = "password123";
 
@@ -30,7 +30,7 @@ async function seed() {
     const users = [userA, userB, userC, userD];
     console.log(`Created ${users.length} users.`);
 
-    // --- 2. Create Groups (2 groups) ---
+    // STEP 2: Create Groups (2 groups)
     console.log("Creating groups...");
     const group1 = await createGroup(
       "Bali Trip 2024",
@@ -43,7 +43,7 @@ async function seed() {
 
     console.log(`Created 2 groups: ${group1.name} and ${group2.name}.`);
 
-    // --- 3. Add Group Members ---
+    //  STEP 3: Add Group Members to a Group
     console.log("Adding group members...");
 
     // Group 1: Alice, Bob, Charlie (3 members)
@@ -57,7 +57,7 @@ async function seed() {
 
     console.log("Group memberships established.");
 
-    // --- 4. Create Items (These are the purchased items linked to an expense) ---
+    //  STEP 4: Create Items for an Expense
     console.log("Creating items...");
 
     // Item 1: Plane Tickets (Paid by Alice, for Group 1)
@@ -71,11 +71,8 @@ async function seed() {
 
     console.log("Created 3 items.");
 
-    // --- 5. Create Expenses and Split Expenses ---
-
-    // ----------------------------------------------------
+    //  STEP 5: Create Expenses and Split Expenses
     // EXPENSE 1: EVEN SPLIT (Group 1: A, B, C | Total: 1200.00)
-    // ----------------------------------------------------
     const total1 = item1.price;
     const members1 = [userA, userB, userC];
     // Calculate the even split amount
@@ -86,7 +83,6 @@ async function seed() {
     );
 
     // Create the main expense entry
-    // Arguments: user_id (payer), group_id, item_id, type, total
     const expense1 = await createExpense(
       userA.id,
       group1.id,
@@ -104,17 +100,14 @@ async function seed() {
       )} to Alice.`
     );
 
-    // ----------------------------------------------------
     // EXPENSE 2: CUSTOM SPLIT (Group 1: A, B, C | Total: 90.00)
-    // ----------------------------------------------------
     const total2 = item2.price;
 
     console.log(
       `\nCreating Expense 2 (Custom Split): $${total2} paid by ${userB.username}`
     );
 
-    // Create the main expense entry
-    // Arguments: user_id (payer), group_id, item_id, type, total
+    // Create the main expense entry for expense 2
     const expense2 = await createExpense(
       userB.id,
       group1.id,
@@ -130,9 +123,7 @@ async function seed() {
       `Expense 2 split: Alice owes $50.00, Charlie owes $40.00 to Bob.`
     );
 
-    // ----------------------------------------------------
     // EXPENSE 3: PERCENTAGE SPLIT (Group 2: A, D | Total: 150.50)
-    // ----------------------------------------------------
     const total3 = item3.price;
     // Diana paid, Alice owes the full amount as a percentage
     const alicePercent = 60;
@@ -142,8 +133,7 @@ async function seed() {
       `\nCreating Expense 3 (Percentage Split): $${total3} paid by ${userD.username}`
     );
 
-    // Create the main expense entry
-    // Arguments: user_id (payer), group_id, item_id, type, total
+    // Create the main expense entry for expense 3
     const expense3 = await createExpense(
       userD.id,
       group2.id,
@@ -161,15 +151,7 @@ async function seed() {
         2
       )} (${alicePercent}%) to Diana.`
     );
-
-    console.log("\n--- Seeding Complete! ---");
   } catch (err) {
     console.error("Error during seeding:", err);
-  } finally {
-    // This is important for clean script execution in many environments
-    if (db && db.end) {
-      await db.end();
-      console.log("Database connection closed.");
-    }
   }
 }
