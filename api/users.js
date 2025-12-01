@@ -1,6 +1,5 @@
 import express from "express";
 const router = express.Router();
-export default router;
 
 import { createUser, getUserByUsernameAndPassword } from "#db/queries/users";
 import requireBody from "#middleware/requireBody";
@@ -13,7 +12,7 @@ router
     const user = await createUser(email, username, password);
 
     const token = await createToken({ id: user.id });
-    res.status(201).send(token);
+    res.status(201).json({ token, user });
   });
 
 router
@@ -26,3 +25,5 @@ router
     const token = await createToken({ id: user.id });
     res.send(token);
   });
+
+  export default router;
