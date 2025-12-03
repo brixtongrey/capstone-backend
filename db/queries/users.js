@@ -1,10 +1,10 @@
 import db from "#db/client";
 import bcrypt from "bcrypt";
 
-export async function createUser(email, username, password) {
+export async function createUser(username, password, email) {
   const sql = `
   INSERT INTO users
-    (email, username, password)
+    (username, password, email)
   VALUES
     ($1, $2, $3)
   RETURNING *
@@ -12,7 +12,7 @@ export async function createUser(email, username, password) {
   const hashedPassword = await bcrypt.hash(password, 10);
   const {
     rows: [user],
-  } = await db.query(sql, [email, username, hashedPassword]);
+  } = await db.query(sql, [username, hashedPassword, email]);
   return user;
 }
 
