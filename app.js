@@ -1,6 +1,5 @@
 import express from "express";
 const app = express();
-export default app;
 
 import usersRouter from "#api/users";
 import getUserFromToken from "#middleware/getUserFromToken";
@@ -26,3 +25,5 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send("Sorry! Something went wrong.");
 });
+
+export default app;
