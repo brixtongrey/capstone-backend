@@ -13,13 +13,14 @@ router.post("/new", requireBody(["name", "description"]), async (req, res) => {
   try {
     const { id } = req.user;
     const { name, description } = req.body;
-    console.log(id);
+
     const group = await createGroup(name, description);
 
     if (!group) res.status(500).send("Unable to create group");
 
     const user = await createGroupMember(group.id, id);
-    console.log(user);
+
+    if (!user) res.status(500).send("Unable to add user as a member to group");
 
     return res.status(201).send(group);
   } catch (error) {
