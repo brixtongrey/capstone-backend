@@ -2,12 +2,27 @@ import express from "express";
 const router = express.Router();
 export default router;
 
-import { createGroup } from "#db/queries/groups";
+import { createGroup, getUserGroups } from "#db/queries/groups";
 import { createGroupMember } from "#db/queries/group_members";
 import requireUser from "#middleware/requireUser";
 import requireBody from "#middleware/requireBody";
 
 router.use(requireUser);
+
+router.get("/", async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const userGroups = await getUserGroups(id);
+
+    if (!userGroups)
+      res.status(200).send("User is currently not a part of any groups");
+
+    return res.status(201).send(userGroups);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
 
 router.post("/new", requireBody(["name", "description"]), async (req, res) => {
   try {
