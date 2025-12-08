@@ -19,7 +19,7 @@ export async function createGroup(name, description) {
 export async function getUserGroups(user_id) {
   try {
     const getUserGroupsQuery = `
-        SELECT g.name, g.description
+        SELECT g.id, g.name, g.description
         FROM groups AS g
         INNER JOIN group_members AS gm
           ON gm.group_id = g.id
