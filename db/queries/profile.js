@@ -10,3 +10,15 @@ export async function getTotalOwedByUser(userId) {
   return result.total;
 }
 
+export async function getExpensesByUserId(user_id) {
+  const query = `
+    SELECT e.*, i.name AS item_name, i.amount AS item_amount, g.name AS group_name
+    FROM expenses e
+    JOIN items i ON e.item_id = i.id
+    JOIN groups g ON e.group_id = g.id
+    WHERE e.user_id = $1
+    ORDER BY e.id DESC
+  `;
+  const { rows } = await db.query(query, [user_id]);
+  return rows;
+}

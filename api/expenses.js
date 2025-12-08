@@ -6,6 +6,7 @@ import { createSplitExpense } from "#db/queries/split_expenses";
 import { createGroup } from "#db/queries/groups";
 import { createItem } from "#db/queries/items";
 import { getUserByUsername } from "#db/queries/users";
+import { getExpensesByUserId } from "#db/queries/expenses";
 import getUserFromToken from "#middleware/getUserFromToken";
 import requireBody from "#middleware/requireBody";
 
@@ -79,5 +80,17 @@ router.post(
     }
   }
 );
+
+router.get("/user", getUserFromToken, async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
+    const expenses = await getExpensesByUserId(req.user.id);
+    res.json(expenses);
+  } catch (err) {
+    console.error("Error fetching user expenses:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export default router;
