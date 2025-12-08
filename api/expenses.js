@@ -11,8 +11,7 @@ import requireBody from "#middleware/requireBody";
 
 router.post(
   "/",
-  getUserFromToken, // ensure req.user is set from Bearer token
-  requireBody(["groupName", "usernames", "items", "splitType"]),
+  getUserFromToken, requireBody(["groupName", "usernames", "items", "splitType"]),
   async (req, res) => {
     console.log("POST /splitbills hit!");
   console.log("req.user:", req.user);
@@ -28,10 +27,10 @@ router.post(
       const { groupName, usernames, items, splitType, shares } = req.body;
       const createdBy = req.user.id;
 
-      // 1️⃣ Create a group
+      // Create a group --> pull from /groups?
       const group = await createGroup(groupName, "Created from SplitBills form");
 
-      // 2️⃣ Map usernames → user records
+      // Map usernames → user records
       const users = {};
       for (const uname of usernames) {
         const user = await getUserByUsernameAndPassword(uname);
@@ -39,7 +38,7 @@ router.post(
         users[uname] = user;
       }
 
-      // 3️⃣ Create items, expenses, and split_expenses
+      // Create items, expenses, and split_expenses
       const createdExpenses = [];
       for (const item of items) {
         const itemRecord = await createItem(
