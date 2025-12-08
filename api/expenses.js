@@ -31,7 +31,6 @@ router.post(
       // Create a group --> pull from /groups?
       const group = await createGroup(groupName, "Created from SplitBills form");
 
-      // Map usernames → user records
       const users = {};
       for (const uname of usernames) {
         const user = await getUserByUsername(uname);
@@ -39,7 +38,6 @@ router.post(
         users[uname] = user;
       }
 
-      // Create items, expenses, and split_expenses
       const createdExpenses = [];
       for (const item of items) {
         const itemRecord = await createItem(
@@ -52,7 +50,6 @@ router.post(
         const total = parseFloat(item.amount);
         const assignedUsers = item.assigned?.length ? item.assigned : usernames;
 
-        // create main expense
         const expense = await createExpense(
           createdBy,
           group.id,
@@ -61,7 +58,6 @@ router.post(
           total
         );
 
-        // create individual splits
         for (const uname of assignedUsers) {
           const owed = parseFloat(shares[uname] || 0);
           await createSplitExpense(expense.id, users[uname].id, owed);
