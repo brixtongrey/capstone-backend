@@ -5,7 +5,7 @@ import { createExpense } from "#db/queries/expenses";
 import { createSplitExpense } from "#db/queries/split_expenses";
 import { createGroup } from "#db/queries/groups";
 import { createItem } from "#db/queries/items";
-import { getUserByUsernameAndPassword } from "#db/queries/users";
+import { getUserByUsername } from "#db/queries/users";
 import getUserFromToken from "#middleware/getUserFromToken";
 import requireBody from "#middleware/requireBody";
 
@@ -33,7 +33,7 @@ router.post(
       // Map usernames → user records
       const users = {};
       for (const uname of usernames) {
-        const user = await getUserByUsernameAndPassword(uname);
+        const user = await getUserByUsername(uname);
         if (!user) return res.status(404).json({ error: `User ${uname} not found` });
         users[uname] = user;
       }
