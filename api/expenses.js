@@ -14,17 +14,8 @@ router.post(
   "/",
   getUserFromToken, requireBody(["groupName", "usernames", "items", "splitType"]),
   async (req, res) => {
-    console.log("POST /splitbills hit!");
-  console.log("req.user:", req.user);
-  console.log("req.body:", req.body);
 
     try {
-      console.log("POST /splitbills hit!");
-      console.log("req.user:", req.user);
-      console.log("req.body:", req.body);
-
-      if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-
       const { groupName, usernames, items, splitType, shares } = req.body;
       const createdBy = req.user.id;
 
@@ -79,8 +70,6 @@ router.post(
 
 router.get("/user", getUserFromToken, async (req, res) => {
   try {
-    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-
     const expenses = await getExpensesByUserId(req.user.id);
     res.json(expenses);
   } catch (err) {
