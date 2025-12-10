@@ -2,7 +2,11 @@ import express from "express";
 const router = express.Router();
 export default router;
 
-import { createGroup, getUserGroups } from "#db/queries/groups";
+import {
+  createGroup,
+  getUserGroups,
+  getGroupDetails,
+} from "#db/queries/groups";
 import { createGroupMember } from "#db/queries/group_members";
 import requireUser from "#middleware/requireUser";
 import requireBody from "#middleware/requireBody";
@@ -19,6 +23,21 @@ router.get("/", async (req, res) => {
       res.status(200).send("User is currently not a part of any groups");
 
     return res.status(201).send(userGroups);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    // const { id } = req.user;
+    const group_id = req.params.id;
+
+    const groupDetails = await getGroupDetails(group_id);
+
+    if (!groupDetails) res.status(403).send("Failed to fetch group details");
+
+    return res.status(201).send(groupDetails);
   } catch (error) {
     console.error(error.message);
   }

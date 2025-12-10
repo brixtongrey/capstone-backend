@@ -35,3 +35,21 @@ export async function getUserGroups(user_id) {
     console.error(error.message);
   }
 }
+
+export async function getGroupDetails(group_id) {
+  try {
+    const getGroupDetailsQuery = `
+    SELECT name, description
+    FROM groups
+    WHERE id = $1;
+    `;
+
+    const {
+      rows: [group],
+    } = await db.query(getGroupDetailsQuery, [group_id]);
+
+    return group;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
