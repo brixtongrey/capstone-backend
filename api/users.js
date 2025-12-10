@@ -34,7 +34,6 @@ router
     res.send({ token, user: { id: user.id, username: user.username } });
   });
 
-  // GET CURRENT USER (for auth check)
 router.get("/me", async (req, res) => {
   try {
     const user = await getUserById(req.user.id);
@@ -43,6 +42,27 @@ router.get("/me", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+  router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    const sql = `
+      SELECT id, username
+      FROM users
+      WHERE username ILIKE $1
+      ORDER BY username ASC
+      LIMIT 20;
+    `;
+
+    const { rows } = await db.query(sql, [`%${q}%`]);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to search users" });
   }
 });
 

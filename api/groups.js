@@ -1,6 +1,5 @@
 import express from "express";
 const router = express.Router();
-export default router;
 
 import {
   createGroup,
@@ -61,3 +60,27 @@ router.post("/new", requireBody(["name", "description"]), async (req, res) => {
     console.error(error.message);
   }
 });
+
+router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    const sql = `
+      SELECT id, name
+      FROM groups
+      WHERE name ILIKE $1
+      ORDER BY name ASC
+      LIMIT 20;
+    `;
+
+    const { rows } = await db.query(sql, [`%${q}%`]);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to search groups" });
+  }
+});
+
+
+export default router;
