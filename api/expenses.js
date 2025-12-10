@@ -7,6 +7,7 @@ import { createGroup } from "#db/queries/groups";
 import { createItem } from "#db/queries/items";
 import { getUserByUsername } from "#db/queries/users";
 import { getExpensesByUserId } from "#db/queries/expenses";
+import { createGroupMember } from "#db/queries/group_members";
 import getUserFromToken from "#middleware/getUserFromToken";
 import requireBody from "#middleware/requireBody";
 
