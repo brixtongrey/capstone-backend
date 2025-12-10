@@ -19,8 +19,21 @@ router.post(
       const { groupName, usernames, items, splitType, shares } = req.body;
       const createdBy = req.user.id;
 
-      // Create a group --> pull from /groups?
-      const group = await createGroup(groupName, "Created from SplitBills form");
+      let group;
+
+      try {
+        group = await createGroup(groupName, "Created from SplitBills form");
+      } catch (err) {
+        if (err.message.includes("already exists")) {
+          return res
+            .status(400)
+            .json({ error: `A group with the name "${groupName}" already exists.` });
+        } else {
+          throw err;
+        }
+      }
+
+      await createGroupMember(group.id, createdBy);
 
       const users = {};
       for (const uname of usernames) {
