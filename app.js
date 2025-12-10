@@ -7,6 +7,9 @@ import getUserFromToken from "#middleware/getUserFromToken";
 import handlePostgresErrors from "#middleware/handlePostgresErrors";
 import cors from "cors";
 import morgan from "morgan";
+import expensesRouter from "#api/expenses";
+import profileRouter from "#api/profile";
+
 
 app.use(cors({ origin: process.env.CORS_ORIGIN ?? /localhost/ }));
 
@@ -21,6 +24,8 @@ app.get("/", (req, res) => res.send("Hello, World!"));
 
 app.use("/users", usersRouter);
 app.use("/groups", groupsRouter);
+app.use("/splitbills", expensesRouter);
+app.use("/profile", profileRouter);
 
 app.use(handlePostgresErrors);
 app.use((err, req, res, next) => {
