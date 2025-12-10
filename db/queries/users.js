@@ -16,7 +16,7 @@ export async function createUser(email, username, password) {
   return user;
 }
 
-export async function getUserByUsernameAndPassword(username, password) {
+export async function getUserByUsername(username) {
   const sql = `
   SELECT *
   FROM users
@@ -25,11 +25,6 @@ export async function getUserByUsernameAndPassword(username, password) {
   const {
     rows: [user],
   } = await db.query(sql, [username]);
-  if (!user) return null;
-
-  const isValid = await bcrypt.compare(password, user.password);
-  if (!isValid) return null;
-
   return user;
 }
 
@@ -42,5 +37,21 @@ export async function getUserById(id) {
   const {
     rows: [user],
   } = await db.query(sql, [id]);
+  return user;
+}
+
+
+export async function getUserByUsernameAndPassword(username, password) {
+  const sql = `
+    SELECT *
+    FROM users
+    WHERE username = $1
+  `;
+  const { rows: [user] } = await db.query(sql, [username]);
+  if (!user) return null;
+
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) return null;
+
   return user;
 }
