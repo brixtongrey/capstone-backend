@@ -9,6 +9,7 @@ import {
 import { createGroupMember } from "#db/queries/group_members";
 import requireUser from "#middleware/requireUser";
 import requireBody from "#middleware/requireBody";
+import { searchGroups } from "#db/queries/groups";
 
 router.use(requireUser);
 
@@ -26,6 +27,18 @@ router.get("/", async (req, res) => {
     console.error(error.message);
   }
 });
+
+router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+    const groups = await searchGroups(q);
+    res.json(groups);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to search groups" });
+  }
+});
+
 
 router.get("/:id", async (req, res) => {
   try {
@@ -58,27 +71,6 @@ router.post("/new", requireBody(["name", "description"]), async (req, res) => {
     return res.status(201).send(group);
   } catch (error) {
     console.error(error.message);
-  }
-});
-
-router.get("/search", async (req, res) => {
-  try {
-    const { q } = req.query;
-
-    const sql = `
-      SELECT id, name
-      FROM groups
-      WHERE name ILIKE $1
-      ORDER BY name ASC
-      LIMIT 20;
-    `;
-
-    const { rows } = await db.query(sql, [`%${q}%`]);
-
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to search groups" });
   }
 });
 

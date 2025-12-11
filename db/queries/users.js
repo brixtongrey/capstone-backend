@@ -55,3 +55,20 @@ export async function getUserByUsernameAndPassword(username, password) {
 
   return user;
 }
+
+export async function searchUsers(q) {
+  try {
+    const sql = `
+      SELECT id, username
+      FROM users
+      WHERE username ILIKE $1
+      ORDER BY username ASC
+      LIMIT 20;
+    `;
+    const { rows } = await db.query(sql, [`%${q}%`]);
+    return rows;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

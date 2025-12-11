@@ -4,6 +4,29 @@ const router = express.Router();
 import { createUser, getUserByUsernameAndPassword, getUserById } from "#db/queries/users";
 import requireBody from "#middleware/requireBody";
 import { createToken } from "#utils/jwt";
+import { searchUsers } from "#db/queries/users";
+
+router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+    const users = await searchUsers(q);
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to search users" });
+  }
+});
+
+router.get("/me", async (req, res) => {
+  try {
+    const user = await getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
 
 router
   .route("/register")
@@ -33,37 +56,5 @@ router
     const token = await createToken({ id: user.id });
     res.send({ token, user: { id: user.id, username: user.username } });
   });
-
-router.get("/me", async (req, res) => {
-  try {
-    const user = await getUserById(req.user.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch user" });
-  }
-});
-
-  router.get("/search", async (req, res) => {
-  try {
-    const { q } = req.query;
-
-    const sql = `
-      SELECT id, username
-      FROM users
-      WHERE username ILIKE $1
-      ORDER BY username ASC
-      LIMIT 20;
-    `;
-
-    const { rows } = await db.query(sql, [`%${q}%`]);
-
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to search users" });
-  }
-});
 
   export default router;

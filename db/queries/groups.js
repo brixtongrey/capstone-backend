@@ -2,14 +2,17 @@ import db from "#db/client";
 
 export async function createGroup(name, description) {
   try {
-    const query = `
-        INSERT INTO groups(name, description)
-        VALUES ($1, $2)
-        RETURNING *
-        `;
-    const {
-      rows: [group],
-    } = await db.query(query, [name, description]);
+    const { rows: existing } = await db.query(
+      `SELECT * FROM groups WHERE name = $1`,
+      [name]
+    );
+    if (existing.length > 0) return existing[0];
+
+    const { rows: [group] } = await db.query(
+      `INSERT INTO groups(name, description) VALUES ($1, $2) RETURNING *`,
+      [name, description]
+    );
+
     return group;
   } catch (error) {
     console.error(error);
@@ -52,4 +55,16 @@ export async function getGroupDetails(group_id) {
   } catch (error) {
     console.error(error.message);
   }
+}
+
+export async function searchGroups(q) {
+  const sql = `
+    SELECT id, name
+    FROM groups
+    WHERE name ILIKE $1
+    ORDER BY name ASC
+    LIMIT 20;
+  `;
+  const { rows } = await db.query(sql, [`%${q}%`]);
+  return rows;
 }
