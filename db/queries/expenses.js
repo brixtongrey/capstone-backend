@@ -28,11 +28,13 @@ export async function getExpenseDetail(user_id, expense_id) {
         ON g.id = e.group_id
       INNER JOIN items AS i 
         ON i.id = e.item_id
-      WHERE e.user_id = $1 AND e.id = $2
+      WHERE e.user_id = $1 AND e.id = $2;
     `;
 
-    const { rows } = await db.query(query, [user_id, expense_id]);
-    return rows;
+    const {
+      rows: [expense],
+    } = await db.query(query, [user_id, expense_id]);
+    return expense;
   } catch (err) {
     console.error("Error in getExpenseDetail:", err);
     throw err;

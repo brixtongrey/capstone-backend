@@ -72,24 +72,24 @@ router.post(
   }
 );
 
+router.get("/:id", getUserFromToken, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const expense_id = req.params.id;
+    const expense_details = await getExpenseDetail(user_id, expense_id);
+    res.send(expense_details);
+  } catch (err) {
+    console.error("Error fetching user expense details:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get("/user", getUserFromToken, async (req, res) => {
   try {
     const expenses = await getExpensesByUserId(req.user.id);
     res.json(expenses);
   } catch (err) {
     console.error("Error fetching user expenses:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-router.get("/:id", getExpenseDetail, async (req, res) => {
-  try {
-    const user_id = req.user.id;
-    const expense_id = req.params;
-    const expense_details = await getExpenseDetail(user_id, expense_id);
-    res.json(expense_details);
-  } catch (err) {
-    console.error("Error fetching user expense details:", err);
     res.status(500).json({ error: err.message });
   }
 });
