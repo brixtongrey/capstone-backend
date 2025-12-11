@@ -44,10 +44,14 @@ export async function getExpenseDetail(user_id, expense_id) {
 export async function getExpensesByUserId(user_id) {
   try {
     const query = `
-      SELECT e.*, i.name AS item_name, i.price AS item_amount, g.name AS group_name
+      SELECT e.*, 
+      i.name AS item_name, 
+      se.amount_owed AS item_amount,
+      g.name AS group_name
       FROM expenses e
       JOIN items i ON e.item_id = i.id
       JOIN groups g ON e.group_id = g.id
+      JOIN split_expenses se ON se.expense_id = e.id AND se.user_id = $1
       WHERE e.user_id = $1
       ORDER BY e.id DESC
     `;
