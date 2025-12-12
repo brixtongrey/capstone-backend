@@ -6,16 +6,16 @@ import { createSplitExpense } from "#db/queries/split_expenses";
 import { createGroup } from "#db/queries/groups";
 import { createItem } from "#db/queries/items";
 import { getUserByUsername } from "#db/queries/users";
-import { getExpensesByUserId } from "#db/queries/expenses";
 import { createGroupMember } from "#db/queries/group_members";
+import { getExpensesByUserId, getExpenseDetail } from "#db/queries/expenses";
 import getUserFromToken from "#middleware/getUserFromToken";
 import requireBody from "#middleware/requireBody";
 
 router.post(
   "/",
-  getUserFromToken, requireBody(["groupName", "usernames", "items", "splitType"]),
+  getUserFromToken,
+  requireBody(["groupName", "usernames", "items", "splitType"]),
   async (req, res) => {
-
     try {
       const { groupName, usernames, items, splitType, shares } = req.body;
       const createdBy = req.user.id;
@@ -39,7 +39,8 @@ router.post(
       const users = {};
       for (const uname of usernames) {
         const user = await getUserByUsername(uname);
-        if (!user) return res.status(404).json({ error: `User ${uname} not found` });
+        if (!user)
+          return res.status(404).json({ error: `User ${uname} not found` });
         users[uname] = user;
       }
 
@@ -81,6 +82,18 @@ router.post(
     }
   }
 );
+
+router.get("/:id", getUserFromToken, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const expense_id = req.params.id;
+    const expense_details = await getExpenseDetail(user_id, expense_id);
+    res.send(expense_details);
+  } catch (err) {
+    console.error("Error fetching user expense details:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 router.get("/user", getUserFromToken, async (req, res) => {
   try {
