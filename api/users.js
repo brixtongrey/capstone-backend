@@ -4,18 +4,6 @@ const router = express.Router();
 import { createUser, getUserByUsernameAndPassword, getUserById } from "#db/queries/users";
 import requireBody from "#middleware/requireBody";
 import { createToken } from "#utils/jwt";
-import { searchUsers } from "#db/queries/users";
-
-router.get("/search", async (req, res) => {
-  try {
-    const { q } = req.query;
-    const users = await searchUsers(q);
-    res.json(users);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to search users" });
-  }
-});
 
 router.get("/me", async (req, res) => {
   try {

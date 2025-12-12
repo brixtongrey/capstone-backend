@@ -11,7 +11,6 @@ export async function createGroupMember(group_id, user_id) {
 
   const { rows } = await db.query(query, [group_id, user_id]);
 
-    // If rows is empty, the user was already a member
     if (rows.length === 0) {
       return { alreadyMember: true };
     }
