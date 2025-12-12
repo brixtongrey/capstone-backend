@@ -6,6 +6,7 @@ import { createSplitExpense } from "#db/queries/split_expenses";
 import { createGroup } from "#db/queries/groups";
 import { createItem } from "#db/queries/items";
 import { getUserByUsername } from "#db/queries/users";
+import { createGroupMember } from "#db/queries/group_members";
 import { getExpensesByUserId, getExpenseDetail } from "#db/queries/expenses";
 import getUserFromToken from "#middleware/getUserFromToken";
 import requireBody from "#middleware/requireBody";
@@ -19,11 +20,21 @@ router.post(
       const { groupName, usernames, items, splitType, shares } = req.body;
       const createdBy = req.user.id;
 
-      // Create a group --> pull from /groups?
-      const group = await createGroup(
-        groupName,
-        "Created from SplitBills form"
-      );
+      let group;
+
+      try {
+        group = await createGroup(groupName, "Created from SplitBills form");
+      } catch (err) {
+        if (err.message.includes("already exists")) {
+          return res
+            .status(400)
+            .json({ error: `A group with the name "${groupName}" already exists.` });
+        } else {
+          throw err;
+        }
+      }
+
+      await createGroupMember(group.id, createdBy);
 
       const users = {};
       for (const uname of usernames) {
