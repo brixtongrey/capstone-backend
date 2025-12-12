@@ -48,6 +48,7 @@ CREATE TABLE split_expenses (
   expense_id INTEGER NOT NULL REFERENCES expenses(id),
   user_id INTEGER NOT NULL REFERENCES users(id),
   amount_owed DECIMAL(10,2) NOT NULL,
+  isPaid BOOLEAN NOT NULL,
   UNIQUE (expense_id, user_id)
 );
 

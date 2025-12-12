@@ -92,8 +92,8 @@ async function seed() {
     );
 
     // Create split_expenses entries for those who owe the payer (Bob and Charlie owe Alice)
-    await createSplitExpense(expense1.id, userB.id, owedEven); // Bob owes Alice
-    await createSplitExpense(expense1.id, userC.id, owedEven); // Charlie owes Alice
+    await createSplitExpense(expense1.id, userB.id, owedEven, false); // Bob owes Alice
+    await createSplitExpense(expense1.id, userC.id, owedEven, false); // Charlie owes Alice
     console.log(
       `Expense 1 split: Bob and Charlie each owe $${owedEven.toFixed(
         2
@@ -117,8 +117,8 @@ async function seed() {
     );
 
     // Split: Alice owes 50, Charlie owes 40 (Bob paid)
-    await createSplitExpense(expense2.id, userA.id, 50.0); // Alice owes Bob
-    await createSplitExpense(expense2.id, userC.id, 40.0); // Charlie owes Bob
+    await createSplitExpense(expense2.id, userA.id, 50.0, false); // Alice owes Bob
+    await createSplitExpense(expense2.id, userC.id, 40.0, false); // Charlie owes Bob
     console.log(
       `Expense 2 split: Alice owes $50.00, Charlie owes $40.00 to Bob.`
     );
@@ -144,7 +144,7 @@ async function seed() {
 
     // Split: Alice is responsible for 60% of the bill, Diana (payer) for 40%.
     // Only split_expenses entries for those who owe the payer (Alice owes Diana)
-    await createSplitExpense(expense3.id, userA.id, aliceOwes); // Alice owes Diana
+    await createSplitExpense(expense3.id, userA.id, aliceOwes, false); // Alice owes Diana
 
     console.log(
       `Expense 3 split: Alice owes $${aliceOwes.toFixed(

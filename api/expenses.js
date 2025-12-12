@@ -26,9 +26,9 @@ router.post(
         group = await createGroup(groupName, "Created from SplitBills form");
       } catch (err) {
         if (err.message.includes("already exists")) {
-          return res
-            .status(400)
-            .json({ error: `A group with the name "${groupName}" already exists.` });
+          return res.status(400).json({
+            error: `A group with the name "${groupName}" already exists.`,
+          });
         } else {
           throw err;
         }
@@ -66,7 +66,7 @@ router.post(
 
         for (const uname of assignedUsers) {
           const owed = parseFloat(shares[uname] || 0);
-          await createSplitExpense(expense.id, users[uname].id, owed);
+          await createSplitExpense(expense.id, users[uname].id, owed, false);
         }
 
         createdExpenses.push(expense);
