@@ -5,6 +5,17 @@ import { createUser, getUserByUsernameAndPassword, getUserById } from "#db/queri
 import requireBody from "#middleware/requireBody";
 import { createToken } from "#utils/jwt";
 
+router.get("/me", async (req, res) => {
+  try {
+    const user = await getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
 router
   .route("/register")
   .post(requireBody(["email", "username", "password"]), async (req, res) => {
@@ -33,17 +44,5 @@ router
     const token = await createToken({ id: user.id });
     res.send({ token, user: { id: user.id, username: user.username } });
   });
-
-  // GET CURRENT USER (for auth check)
-router.get("/me", async (req, res) => {
-  try {
-    const user = await getUserById(req.user.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch user" });
-  }
-});
 
   export default router;
