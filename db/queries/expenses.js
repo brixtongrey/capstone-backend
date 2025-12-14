@@ -22,12 +22,14 @@ export async function getExpenseDetail(user_id, expense_id) {
         e.total AS expense_total,
         i.name AS item_name,
         i.quantity,
-        i.price
+        i.price,
+        se.is_paid
       FROM expenses AS e
       INNER JOIN groups AS g
         ON g.id = e.group_id
       INNER JOIN items AS i 
         ON i.id = e.item_id
+      INNER JOIN split_expenses se ON se.expense_id = e.id AND se.user_id = $1
       WHERE e.user_id = $1 AND e.id = $2;
     `;
 
@@ -59,6 +61,25 @@ export async function getExpensesByUserId(user_id) {
 
     const { rows } = await db.query(query, [user_id]);
     return rows;
+  } catch (err) {
+    console.error("Error in getExpensesByUserId:", err);
+    throw err;
+  }
+}
+
+export async function updateExpensePaid(is_paid, user_id, expense_id) {
+  try {
+    const query = `
+      UPDATE split_expenses
+      SET is_paid = $1
+      WHERE user_id = $2 AND expense_id = $3
+      RETURNING *;
+    `;
+
+    const {
+      rows: [expense],
+    } = await db.query(query, [is_paid, user_id, expense_id]);
+    return expense;
   } catch (err) {
     console.error("Error in getExpensesByUserId:", err);
     throw err;

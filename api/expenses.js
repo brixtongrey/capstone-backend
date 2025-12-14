@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { createExpense } from "#db/queries/expenses";
+import { createExpense, updateExpensePaid } from "#db/queries/expenses";
 import { createSplitExpense } from "#db/queries/split_expenses";
 import { createGroup } from "#db/queries/groups";
 import { createItem } from "#db/queries/items";
@@ -26,9 +26,9 @@ router.post(
         group = await createGroup(groupName, "Created from SplitBills form");
       } catch (err) {
         if (err.message.includes("already exists")) {
-          return res
-            .status(400)
-            .json({ error: `A group with the name "${groupName}" already exists.` });
+          return res.status(400).json({
+            error: `A group with the name "${groupName}" already exists.`,
+          });
         } else {
           throw err;
         }
@@ -66,7 +66,7 @@ router.post(
 
         for (const uname of assignedUsers) {
           const owed = parseFloat(shares[uname] || 0);
-          await createSplitExpense(expense.id, users[uname].id, owed);
+          await createSplitExpense(expense.id, users[uname].id, owed, false);
         }
 
         createdExpenses.push(expense);
@@ -104,5 +104,23 @@ router.get("/user", getUserFromToken, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.patch(
+  "/:id",
+  getUserFromToken,
+  requireBody(["is_paid"]),
+  async (req, res) => {
+    try {
+      const user_id = req.user.id;
+      const expense_id = req.params.id;
+      const { is_paid } = req.body;
+      const expense = await updateExpensePaid(is_paid, user_id, expense_id);
+      res.send(expense);
+    } catch (err) {
+      console.error("Error fetching user expenses:", err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
 
 export default router;
