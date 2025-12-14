@@ -79,7 +79,6 @@ export async function updateExpensePaid(is_paid, user_id, expense_id) {
     const {
       rows: [expense],
     } = await db.query(query, [is_paid, user_id, expense_id]);
-    console.log(expense);
     return expense;
   } catch (err) {
     console.error("Error in getExpensesByUserId:", err);
